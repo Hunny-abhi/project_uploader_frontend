@@ -11,6 +11,7 @@ import ResetPassword from "./pages/ResetPassword";
 import VerifyEmail from "./pages/VerifyEmail";
 import Projects from "./pages/Projects"; // Make sure you create this component
 import Profile from "./pages/Profile";
+import EditProject from "./pages/EditProject";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/projects/:id/edit" element={<EditProject />} />
         <Route
           path="*"
           element={<div className="p-6 text-center">Page Not Found</div>}

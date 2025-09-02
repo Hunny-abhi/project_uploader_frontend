@@ -10,7 +10,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <UserProvider>
       <App />
-      <ToastContainer position="top-right" autoClose={3000} />
+      {/* <ToastContainer position="bottom-right" autoClose={3000} /> */}
     </UserProvider>
   </React.StrictMode>
 );
