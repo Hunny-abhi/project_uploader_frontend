@@ -8,6 +8,7 @@ import UploadProject from "./pages/UploadProject";
 import UpdateProject from "./pages/UpdateProject";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import Verify from "./pages/Verify";
 import Projects from "./pages/Projects"; // Make sure you create this component
 import Profile from "./pages/Profile";
 
@@ -26,6 +27,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/verify/:token" element={<Verify />} />
         <Route
           path="*"
           element={<div className="p-6 text-center">Page Not Found</div>}
