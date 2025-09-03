@@ -13,14 +13,16 @@ export default function Projects() {
   const [editingProject, setEditingProject] = useState(null);
   const [files, setFiles] = useState({ image: null, video: null, file: null });
 
-  // ✅ check if current user is owner
+  // ✅ Lightbox state
+  const [preview, setPreview] = useState({ open: false, index: 0, media: [] });
+  const [zoom, setZoom] = useState(1);
+
   const isOwner = (p) => {
     const ownerId =
       typeof p.createdBy === "string" ? p.createdBy : p.createdBy?._id;
     return user?.userId === ownerId;
   };
 
-  // ✅ fetch only my projects
   const fetchProjects = async () => {
     setLoading(true);
     try {
@@ -48,7 +50,6 @@ export default function Projects() {
     fetchProjects();
   }, []);
 
-  // ✅ open edit modal
   const openEditModal = (p) => {
     setEditingProject({
       ...p,
@@ -72,7 +73,6 @@ export default function Projects() {
   const handleField = (key, value) =>
     setEditingProject((prev) => ({ ...prev, [key]: value }));
 
-  // ✅ delete project
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this project?"))
       return;
@@ -89,7 +89,6 @@ export default function Projects() {
     }
   };
 
-  // ✅ update project
   const handleUpdate = async (e) => {
     e.preventDefault();
     if (!editingProject) return;
@@ -133,6 +132,26 @@ export default function Projects() {
     }
   };
 
+  // ✅ Open lightbox
+  const openPreview = (media, index) => {
+    setPreview({ open: true, index, media });
+    setZoom(1);
+  };
+
+  const closePreview = () => setPreview({ open: false, index: 0, media: [] });
+
+  const nextPreview = () =>
+    setPreview((prev) => ({
+      ...prev,
+      index: (prev.index + 1) % prev.media.length,
+    }));
+
+  const prevPreview = () =>
+    setPreview((prev) => ({
+      ...prev,
+      index: (prev.index - 1 + prev.media.length) % prev.media.length,
+    }));
+
   return (
     <div className="p-6">
       <ToastContainer position="top-right" autoClose={3000} />
@@ -155,65 +174,135 @@ export default function Projects() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {projects
           .filter((p) => p.name?.toLowerCase().includes(search.toLowerCase()))
-          .map((p) => (
-            <motion.div
-              key={p._id}
-              className="bg-white shadow-lg rounded-lg p-4 space-y-2"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <h3 className="font-bold text-lg">{p.name}</h3>
-              <p>{p.description}</p>
-              <p>Status: {p.status}</p>
-              <p>Tags: {(p.tags && p.tags.join(", ")) || "No tags"}</p>
+          .map((p) => {
+            const media = [];
+            if (p.image) media.push({ type: "image", src: p.image });
+            if (p.video) media.push({ type: "video", src: p.video });
 
-              {p.image && (
-                <img
-                  src={p.image}
-                  alt="project"
-                  className="w-full h-40 object-cover rounded"
-                />
-              )}
-              {p.video && (
-                <video
-                  src={p.video}
-                  controls
-                  className="w-full h-40 object-cover rounded"
-                />
-              )}
+            return (
+              <motion.div
+                key={p._id}
+                className="bg-white shadow-lg rounded-lg p-4 space-y-2"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <h3 className="font-bold text-lg">{p.name}</h3>
+                <p>{p.description}</p>
+                <p>Status: {p.status}</p>
+                <p>Tags: {(p.tags && p.tags.join(", ")) || "No tags"}</p>
 
-              <div className="flex items-center justify-between mt-2">
-                <span className="text-xs text-gray-500">
-                  By: {typeof p.createdBy === "object" ? p.createdBy.email : ""}
-                </span>
-
-                {isOwner(p) && (
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => openEditModal(p)}
-                      className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(p._id)}
-                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                    >
-                      Delete
-                    </button>
-                  </div>
+                {/* thumbnails */}
+                {media.map((m, i) =>
+                  m.type === "image" ? (
+                    <img
+                      key={i}
+                      src={m.src}
+                      alt="project"
+                      onClick={() => openPreview(media, i)}
+                      className="w-full h-40 object-cover rounded cursor-pointer"
+                    />
+                  ) : (
+                    <video
+                      key={i}
+                      src={m.src}
+                      controls
+                      onClick={() => openPreview(media, i)}
+                      className="w-full h-40 object-cover rounded cursor-pointer"
+                    />
+                  )
                 )}
-              </div>
-            </motion.div>
-          ))}
+
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-xs text-gray-500">
+                    By:{" "}
+                    {typeof p.createdBy === "object" ? p.createdBy.email : ""}
+                  </span>
+
+                  {isOwner(p) && (
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => openEditModal(p)}
+                        className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(p._id)}
+                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            );
+          })}
       </div>
 
-      {/* Edit Modal */}
+      {/* ✅ Lightbox Preview Modal */}
+      {preview.open && (
+        <div
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+          onClick={closePreview}
+        >
+          <div
+            className="relative max-w-5xl w-full flex flex-col items-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close */}
+            <button
+              className="absolute top-4 right-4 text-white text-2xl"
+              onClick={closePreview}
+            >
+              ✖
+            </button>
+
+            {/* Media */}
+            {preview.media[preview.index].type === "image" ? (
+              <img
+                src={preview.media[preview.index].src}
+                alt="preview"
+                style={{ transform: `scale(${zoom})` }}
+                className="max-h-[80vh] mx-auto rounded-lg transition-transform"
+              />
+            ) : (
+              <video
+                src={preview.media[preview.index].src}
+                controls
+                autoPlay
+                style={{ transform: `scale(${zoom})` }}
+                className="max-h-[80vh] mx-auto rounded-lg transition-transform"
+              />
+            )}
+
+            {/* Controls */}
+            <div className="flex justify-between w-full mt-4 px-6 text-white">
+              <button onClick={prevPreview} className="text-2xl">
+                ⬅ Prev
+              </button>
+              <div className="flex items-center gap-4">
+                <button onClick={() => setZoom((z) => Math.max(0.5, z - 0.2))}>
+                  ➖ Zoom Out
+                </button>
+                <button onClick={() => setZoom(1)}>🔄 Reset</button>
+                <button onClick={() => setZoom((z) => z + 0.2)}>
+                  ➕ Zoom In
+                </button>
+              </div>
+              <button onClick={nextPreview} className="text-2xl">
+                Next ➡
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal (same as before) */}
       {editingProject && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl shadow-lg max-h-[90vh] overflow-y-auto">
             <h2 className="text-lg font-bold mb-4">Edit Project</h2>
-
             <form onSubmit={handleUpdate} className="space-y-3">
               <input
                 type="text"
@@ -222,7 +311,6 @@ export default function Projects() {
                 placeholder="Name"
                 className="w-full border p-2 rounded"
               />
-
               <input
                 type="text"
                 value={editingProject.category || ""}
@@ -230,7 +318,6 @@ export default function Projects() {
                 placeholder="Category"
                 className="w-full border p-2 rounded"
               />
-
               <select
                 value={editingProject.status || "Pending"}
                 onChange={(e) => handleField("status", e.target.value)}
@@ -239,21 +326,18 @@ export default function Projects() {
                 <option value="Pending">Pending</option>
                 <option value="Complete">Complete</option>
               </select>
-
               <textarea
                 value={editingProject.description || ""}
                 onChange={(e) => handleField("description", e.target.value)}
                 placeholder="Description"
                 className="w-full border p-2 rounded"
               />
-
               <textarea
                 value={editingProject.content || ""}
                 onChange={(e) => handleField("content", e.target.value)}
                 placeholder="Content"
                 className="w-full border p-2 rounded"
               />
-
               <input
                 type="text"
                 value={
@@ -273,8 +357,6 @@ export default function Projects() {
                 placeholder="Tags (comma separated)"
                 className="w-full border p-2 rounded"
               />
-
-              {/* file uploads */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                 <label className="block text-sm">
                   Image
@@ -309,7 +391,6 @@ export default function Projects() {
                   />
                 </label>
               </div>
-
               <div className="flex flex-col sm:flex-row justify-end gap-2 pt-2">
                 <button
                   type="button"
