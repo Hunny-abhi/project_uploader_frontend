@@ -10,30 +10,35 @@ export default function Projects() {
   const [projects, setProjects] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  // modal state
   const [editingProject, setEditingProject] = useState(null);
   const [files, setFiles] = useState({ image: null, video: null, file: null });
 
+  // ✅ check if current user is owner
   const isOwner = (p) => {
     const ownerId =
       typeof p.createdBy === "string" ? p.createdBy : p.createdBy?._id;
     return user?.userId === ownerId;
   };
 
+  // ✅ fetch only my projects
   const fetchProjects = async () => {
     setLoading(true);
-    setError("");
     try {
-      const res = search
-        ? await API.get(`/projects/search?name=${encodeURIComponent(search)}`)
-        : await API.get("/projects/all");
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("⚠️ Please login first");
+        window.location.href = "/login";
+        return;
+      }
+
+      const res = await API.get("/projects/my", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
       setProjects(res.data || []);
     } catch (err) {
       console.error("Failed to fetch projects:", err);
-      setError("Failed to fetch projects.");
-      toast.error("❌ Failed to fetch projects");
+      toast.error(err.response?.data?.message || "❌ Failed to fetch projects");
     } finally {
       setLoading(false);
     }
@@ -41,8 +46,9 @@ export default function Projects() {
 
   useEffect(() => {
     fetchProjects();
-  }, [search]);
+  }, []);
 
+  // ✅ open edit modal
   const openEditModal = (p) => {
     setEditingProject({
       ...p,
@@ -66,6 +72,7 @@ export default function Projects() {
   const handleField = (key, value) =>
     setEditingProject((prev) => ({ ...prev, [key]: value }));
 
+  // ✅ delete project
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this project?"))
       return;
@@ -78,10 +85,11 @@ export default function Projects() {
       toast.success("🗑️ Project deleted successfully");
     } catch (err) {
       console.error("Failed to delete project:", err);
-      toast.error("❌ Failed to delete project");
+      toast.error(err.response?.data?.message || "❌ Failed to delete project");
     }
   };
 
+  // ✅ update project
   const handleUpdate = async (e) => {
     e.preventDefault();
     if (!editingProject) return;
@@ -89,7 +97,6 @@ export default function Projects() {
     try {
       const token = localStorage.getItem("token");
       const formData = new FormData();
-      console.log("Token:", token);
 
       formData.append("name", editingProject.name || "");
       formData.append("category", editingProject.category || "");
@@ -122,7 +129,7 @@ export default function Projects() {
       fetchProjects();
     } catch (err) {
       console.error("Update failed:", err);
-      toast.error("❌ Failed to update project");
+      toast.error(err.response?.data?.message || "❌ Failed to update project");
     }
   };
 
@@ -130,6 +137,7 @@ export default function Projects() {
     <div className="p-6">
       <ToastContainer position="top-right" autoClose={3000} />
 
+      {/* search */}
       <input
         type="text"
         placeholder="Search projects"
@@ -139,88 +147,72 @@ export default function Projects() {
       />
 
       {loading && <p className="mb-4">Loading projects...</p>}
-      {error && <p className="mb-4 text-red-500">{error}</p>}
       {!loading && projects.length === 0 && (
         <p className="mb-4 text-gray-500">No projects found.</p>
       )}
 
+      {/* project list */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {projects.map((p) => (
-          <motion.div
-            key={p._id}
-            className="bg-white shadow-lg rounded-lg p-4 space-y-2"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <h3 className="font-bold text-lg">{p.name}</h3>
-            <p>{p.description}</p>
-            <p>Status: {p.status}</p>
-            <p>Tags: {(p.tags && p.tags.join(", ")) || "No tags"}</p>
+        {projects
+          .filter((p) => p.name?.toLowerCase().includes(search.toLowerCase()))
+          .map((p) => (
+            <motion.div
+              key={p._id}
+              className="bg-white shadow-lg rounded-lg p-4 space-y-2"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <h3 className="font-bold text-lg">{p.name}</h3>
+              <p>{p.description}</p>
+              <p>Status: {p.status}</p>
+              <p>Tags: {(p.tags && p.tags.join(", ")) || "No tags"}</p>
 
-            {p.image && (
-              <img
-                src={p.image}
-                alt="project"
-                className="w-full h-40 object-cover rounded"
-              />
-            )}
-            {p.video && (
-              <video
-                src={p.video}
-                controls
-                className="w-full h-40 object-cover rounded"
-              />
-            )}
-
-            <div className="flex items-center justify-between mt-2">
-              <span className="text-xs text-gray-500">
-                By: {typeof p.createdBy === "object" ? p.createdBy.email : ""}
-              </span>
-
-              {isOwner(p) && (
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => openEditModal(p)}
-                    className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(p._id)}
-                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                  >
-                    Delete
-                  </button>
-                </div>
+              {p.image && (
+                <img
+                  src={p.image}
+                  alt="project"
+                  className="w-full h-40 object-cover rounded"
+                />
               )}
-            </div>
-          </motion.div>
-        ))}
+              {p.video && (
+                <video
+                  src={p.video}
+                  controls
+                  className="w-full h-40 object-cover rounded"
+                />
+              )}
+
+              <div className="flex items-center justify-between mt-2">
+                <span className="text-xs text-gray-500">
+                  By: {typeof p.createdBy === "object" ? p.createdBy.email : ""}
+                </span>
+
+                {isOwner(p) && (
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => openEditModal(p)}
+                      className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(p._id)}
+                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          ))}
       </div>
 
-      {/* Responsive Edit Modal */}
+      {/* Edit Modal */}
       {editingProject && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl shadow-lg max-h-[90vh] overflow-y-auto">
             <h2 className="text-lg font-bold mb-4">Edit Project</h2>
-
-            {/* current previews */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-              {editingProject.image && (
-                <img
-                  src={editingProject.image}
-                  alt="current"
-                  className="w-full h-32 object-cover rounded border"
-                />
-              )}
-              {editingProject.video && (
-                <video
-                  src={editingProject.video}
-                  controls
-                  className="w-full h-32 object-cover rounded border"
-                />
-              )}
-            </div>
 
             <form onSubmit={handleUpdate} className="space-y-3">
               <input
@@ -282,7 +274,7 @@ export default function Projects() {
                 className="w-full border p-2 rounded"
               />
 
-              {/* file pickers */}
+              {/* file uploads */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                 <label className="block text-sm">
                   Image
