@@ -37,7 +37,7 @@ export default function Profile() {
   if (error) return <p className="p-6 text-red-500">{error}</p>;
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded shadow-lg mt-6">
+    <div className="max-w-md mx-auto p-6 bg-gray-200 rounded shadow-lg mt-6">
       <h2 className="text-2xl font-bold mb-4">Profile</h2>
       <p>
         <strong>Email:</strong> {userData.email}

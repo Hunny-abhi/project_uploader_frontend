@@ -19,7 +19,7 @@ export default function Register() {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded shadow-lg mt-10">
+    <div className="max-w-md mx-auto p-6 bg-blue-50 rounded shadow-lg mt-10">
       <h2 className="text-xl font-bold mb-4">Register</h2>
       {message && <p className="text-green-500 mb-2">{message}</p>}
       {error && <p className="text-red-500 mb-2">{error}</p>}

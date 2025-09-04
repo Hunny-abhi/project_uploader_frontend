@@ -13,27 +13,44 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
-      <h1 className="text-4xl font-bold mb-6 text-center">
-        🚀 Welcome to ProjectUploader
-      </h1>
-      <p className="mb-4 text-gray-600 text-center">
-        Please register or login to manage your projects
-      </p>
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      {/* Background Video */}
+      <video
+        className="absolute inset-0 w-full h-full object-cover"
+        src="https://cdn.pixabay.com/video/2020/03/13/33628-397860881_large.mp4"
+        autoPlay
+        loop
+        muted
+        playsInline
+        aria-hidden="true"
+      />
 
-      <div className="flex flex-col md:flex-row gap-6">
-        <Link
-          to="/register"
-          className="bg-blue-500 text-white px-6 py-3 rounded shadow hover:bg-blue-600 transition"
-        >
-          Register
-        </Link>
-        <Link
-          to="/login"
-          className="bg-green-500 text-white px-6 py-3 rounded shadow hover:bg-green-600 transition"
-        >
-          Login
-        </Link>
+      {/* Optional Dark Overlay for better contrast */}
+      <div className="absolute inset-0 bg-black opacity-40"></div>
+
+      {/* Content */}
+      <div className="relative z-10 text-center">
+        <h1 className="text-4xl font-bold mb-6 text-white">
+          🚀 Welcome to ContentUploader
+        </h1>
+        <p className="mb-4 text-gray-200">
+          Please register or login to manage your ContentUploader
+        </p>
+
+        <div className="flex flex-col md:flex-row gap-6 justify-center">
+          <Link
+            to="/register"
+            className="bg-blue-500 text-white px-6 py-3 rounded shadow hover:bg-blue-600 transition"
+          >
+            Register
+          </Link>
+          <Link
+            to="/login"
+            className="bg-green-500 text-white px-6 py-3 rounded shadow hover:bg-green-600 transition"
+          >
+            Login
+          </Link>
+        </div>
       </div>
     </div>
   );
