@@ -57,16 +57,21 @@ export default function UploadProject() {
   };
 
   return (
-    <div className="flex justify-center items-center p-8">
+    <div className="bg-blue-50 flex justify-center items-center p-8">
       <form
         onSubmit={handleSubmit}
-        className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-lg space-y-3"
+        className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-lg space-y-4"
       >
-        <h2 className="text-lg font-bold">Upload Project</h2>
+        {/* Form Heading */}
+        <h2 className="text-2xl font-bold text-gray-800 text-center">
+          Upload Project
+        </h2>
 
-        {message && <p className="text-green-500">{message}</p>}
-        {error && <p className="text-red-500">{error}</p>}
+        {/* Success & Error Messages */}
+        {message && <p className="text-green-500 text-sm">{message}</p>}
+        {error && <p className="text-red-500 text-sm">{error}</p>}
 
+        {/* Project Name */}
         <input
           name="name"
           value={form.name}
@@ -74,6 +79,8 @@ export default function UploadProject() {
           onChange={handleChange}
           className="w-full border p-2 rounded"
         />
+
+        {/* Status */}
         <select
           name="status"
           value={form.status}
@@ -83,6 +90,8 @@ export default function UploadProject() {
           <option value="Pending">Pending</option>
           <option value="Complete">Complete</option>
         </select>
+
+        {/* Category */}
         <input
           name="category"
           value={form.category}
@@ -90,6 +99,8 @@ export default function UploadProject() {
           onChange={handleChange}
           className="w-full border p-2 rounded"
         />
+
+        {/* Tags */}
         <input
           name="tags"
           value={form.tags}
@@ -97,6 +108,8 @@ export default function UploadProject() {
           onChange={handleChange}
           className="w-full border p-2 rounded"
         />
+
+        {/* Description */}
         <textarea
           name="description"
           value={form.description}
@@ -104,20 +117,77 @@ export default function UploadProject() {
           onChange={handleChange}
           className="w-full border p-2 rounded"
         />
-        <textarea
-          name="content"
-          value={form.content}
-          placeholder="Content / README"
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-        />
-        <input name="image" type="file" onChange={handleFile} />
-        <input name="video" type="file" onChange={handleFile} />
-        <input name="file" type="file" onChange={handleFile} />
 
-        <button className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600">
-          Upload
-        </button>
+        <div className="space-y-4">
+          {/* Content */}
+          <textarea
+            name="content"
+            value={form.content}
+            placeholder="Content"
+            onChange={handleChange}
+            className="w-full border rounded p-2"
+          />
+
+          {/* Tags */}
+          <input
+            name="tags"
+            value={form.tags}
+            placeholder="Tags (comma separated)"
+            onChange={handleChange}
+            className="w-full border rounded p-2"
+          />
+
+          {/* Image */}
+          <label className="block text-sm font-normal text-gray-500">
+            Image
+            <input
+              name="image"
+              type="file"
+              accept="image/*"
+              onChange={handleFile}
+              className="w-full border rounded p-2 mt-1"
+            />
+          </label>
+
+          {/* Video */}
+          <label className="block text-sm font-normal text-gray-500">
+            Video
+            <input
+              name="video"
+              type="file"
+              accept="video/*"
+              onChange={handleFile}
+              className="w-full border rounded p-2 mt-1"
+            />
+          </label>
+
+          {/* File */}
+          <label className="block text-sm font-normal text-gray-500">
+            File
+            <input
+              name="file"
+              type="file"
+              onChange={handleFile}
+              className="w-full border rounded p-2 mt-1"
+            />
+          </label>
+
+          {/* Buttons */}
+          <div className="flex justify-between items-center mt-4">
+            <button
+              type="button"
+              className="bg-gray-400 hover:bg-gray-500 text-black px-4 py-2 rounded"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+            >
+              Save
+            </button>
+          </div>
+        </div>
       </form>
     </div>
   );

@@ -153,10 +153,10 @@ export default function Projects() {
     }));
 
   return (
-    <div className="p-6">
+    <div className="p-6 bg-blue-50 ">
       <ToastContainer position="top-right" autoClose={3000} />
 
-      {/* search */}
+      {/* Search */}
       <input
         type="text"
         placeholder="Search projects"
@@ -170,8 +170,8 @@ export default function Projects() {
         <p className="mb-4 text-gray-500">No projects found.</p>
       )}
 
-      {/* project list */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* Project List */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {projects
           .filter((p) => p.name?.toLowerCase().includes(search.toLowerCase()))
           .map((p) => {
@@ -182,53 +182,62 @@ export default function Projects() {
             return (
               <motion.div
                 key={p._id}
-                className="bg-white shadow-lg rounded-lg p-4 space-y-2"
+                className="bg-white shadow-lg rounded-lg p-4 flex flex-col justify-between space-y-2"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                <h3 className="font-bold text-lg">{p.name}</h3>
-                <p>{p.description}</p>
-                <p>Status: {p.status}</p>
-                <p>Tags: {(p.tags && p.tags.join(", ")) || "No tags"}</p>
+                <div>
+                  <h3 className="font-bold text-lg">{p.name}</h3>
+                  {p.description && (
+                    <p className="text-gray-700">{p.description}</p>
+                  )}
+                  <p className="text-sm">Status: {p.status}</p>
+                  <p className="text-sm">
+                    Tags: {(p.tags && p.tags.join(", ")) || "No tags"}
+                  </p>
 
-                {/* thumbnails */}
-                {media.map((m, i) =>
-                  m.type === "image" ? (
-                    <img
-                      key={i}
-                      src={m.src}
-                      alt="project"
-                      onClick={() => openPreview(media, i)}
-                      className="w-full h-40 object-cover rounded cursor-pointer"
-                    />
-                  ) : (
-                    <video
-                      key={i}
-                      src={m.src}
-                      controls
-                      onClick={() => openPreview(media, i)}
-                      className="w-full h-40 object-cover rounded cursor-pointer"
-                    />
-                  )
-                )}
+                  {/* Thumbnails */}
+                  <div className="mt-2 space-y-2">
+                    {media.map((m, i) =>
+                      m.type === "image" ? (
+                        <img
+                          key={i}
+                          src={m.src}
+                          alt="project"
+                          onClick={() => openPreview(media, i)}
+                          className="w-full h-40 object-cover rounded cursor-pointer"
+                        />
+                      ) : (
+                        <video
+                          key={i}
+                          src={m.src}
+                          controls
+                          onClick={() => openPreview(media, i)}
+                          className="w-full h-40 object-cover rounded cursor-pointer"
+                        />
+                      )
+                    )}
+                  </div>
+                </div>
 
-                <div className="flex items-center justify-between mt-2">
+                {/* Footer (By + Edit/Delete) */}
+                <div className="flex flex-wrap sm:flex-nowrap items-center justify-between mt-3 gap-2">
                   <span className="text-xs text-gray-500">
                     By:{" "}
                     {typeof p.createdBy === "object" ? p.createdBy.email : ""}
                   </span>
 
                   {isOwner(p) && (
-                    <div className="flex space-x-2">
+                    <div className="flex flex-wrap sm:flex-nowrap gap-2">
                       <button
                         onClick={() => openEditModal(p)}
-                        className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+                        className="bg-blue-500 text-white px-3 py-1 text-sm rounded hover:bg-blue-600 transition"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDelete(p._id)}
-                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                        className="bg-red-500 text-white px-3 py-1 text-sm rounded hover:bg-red-600 transition"
                       >
                         Delete
                       </button>
@@ -240,7 +249,7 @@ export default function Projects() {
           })}
       </div>
 
-      {/* ✅ Lightbox Preview Modal */}
+      {/* Lightbox Preview Modal */}
       {preview.open && (
         <div
           className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
@@ -250,7 +259,6 @@ export default function Projects() {
             className="relative max-w-5xl w-full flex flex-col items-center"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close */}
             <button
               className="absolute top-4 right-4 text-white text-2xl"
               onClick={closePreview}
@@ -258,7 +266,6 @@ export default function Projects() {
               ✖
             </button>
 
-            {/* Media */}
             {preview.media[preview.index].type === "image" ? (
               <img
                 src={preview.media[preview.index].src}
@@ -276,7 +283,6 @@ export default function Projects() {
               />
             )}
 
-            {/* Controls */}
             <div className="flex justify-between w-full mt-4 px-6 text-white">
               <button onClick={prevPreview} className="text-2xl">
                 ⬅ Prev
@@ -298,10 +304,10 @@ export default function Projects() {
         </div>
       )}
 
-      {/* Edit Modal (same as before) */}
+      {/* Edit Modal (unchanged logic, only layout updated) */}
       {editingProject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl shadow-lg max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-100 px-4">
+          <div className="bg-gray-200 rounded-lg p-6 w-full max-w-2xl shadow-lg max-h-[90vh] overflow-y-auto">
             <h2 className="text-lg font-bold mb-4">Edit Project</h2>
             <form onSubmit={handleUpdate} className="space-y-3">
               <input
@@ -413,3 +419,4 @@ export default function Projects() {
     </div>
   );
 }
+// localStorage.setItem("token", res.data.token);

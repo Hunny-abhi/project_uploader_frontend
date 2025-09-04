@@ -76,20 +76,24 @@
 
             {/* File section */}
             {p.file && (
-              <motion.a
-                href={p.file}
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ x: 5 }}
-                className="flex items-center gap-2 mt-3 p-2 bg-gray-100 rounded-md text-blue-600 hover:underline text-sm"
-              >
-                <span className="text-xl">{getFileIcon(p.file)}</span>
-                <span className="truncate">Download File</span>
-              </motion.a>
+              <div className="mt-3">
+                <motion.a
+                  href={p.file}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ x: 5 }}
+                  className="flex items-center gap-2 p-2 bg-gray-100 rounded-md text-blue-600 hover:underline text-sm truncate"
+                >
+                  <span className="text-xl">{getFileIcon(p.file)}</span>
+                  <span className="truncate">
+                    {p.file.split("/").pop() || "View File"}
+                  </span>
+                </motion.a>
+              </div>
             )}
 
             {/* Footer */}
-            <div className="flex items-center justify-between pt-3 border-t mt-3">
+            <div className="flex flex-wrap sm:flex-nowrap justify-between items-center pt-3 border-t mt-3 gap-2">
               <span className="text-xs text-gray-400">
                 By:{" "}
                 {typeof p.createdBy === "object"
@@ -98,7 +102,7 @@
               </span>
 
               {isOwner(p) && (
-                <div className="flex space-x-2">
+                <div className="flex flex-wrap sm:flex-nowrap gap-2">
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
