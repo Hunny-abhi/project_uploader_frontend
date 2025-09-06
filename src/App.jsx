@@ -18,8 +18,8 @@ function App() {
     <BrowserRouter>
       <Navbar />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/projects" element={<Projects />} />{" "}
+        <Route path="/api" element={<Home />} />
+        <Route path="/api/projects" element={<Projects />} />{" "}
         {/* Projects list page */}
         <Route path="/projects/update/:id" element={<UpdateProject />} />
         <Route path="/upload" element={<UploadProject />} />
