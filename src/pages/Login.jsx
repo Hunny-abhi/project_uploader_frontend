@@ -18,7 +18,7 @@ export default function Login() {
     setError(""); // reset error before API call
 
     try {
-      const res = await API.post("/api/login", form, {
+      const res = await API.post("/login", form, {
         headers: { "Content-Type": "application/json" },
       });
 
