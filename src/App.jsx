@@ -19,7 +19,7 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/api" element={<Home />} />
-        <Route path="/api/projects" element={<Projects />} />{" "}
+        <Route path="/projects" element={<Projects />} />{" "}
         {/* Projects list page */}
         <Route path="/projects/update/:id" element={<UpdateProject />} />
         <Route path="/upload" element={<UploadProject />} />
