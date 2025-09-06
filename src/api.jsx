@@ -3,7 +3,6 @@ import axios from "axios";
 const API = axios.create({
   baseURL: "https://contentuploaderbackend.onrender.com", // backend ka base URL
 });
-
 // Token attach karne ke liye middleware
 API.interceptors.request.use((req) => {
   const token = localStorage.getItem("token");
