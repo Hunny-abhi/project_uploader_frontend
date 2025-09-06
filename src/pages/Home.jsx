@@ -31,7 +31,7 @@ export default function Home() {
       {/* Content */}
       <div className="relative z-10 text-center">
         <h1 className="text-4xl font-bold mb-6 text-white">
-          🚀 Welcome to ContentUploader
+          Welcome to ContentUploader
         </h1>
         <p className="mb-4 text-gray-200">
           Please register or login to manage your ContentUploader

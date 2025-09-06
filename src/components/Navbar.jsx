@@ -4,8 +4,6 @@ import { motion } from "framer-motion";
 import { UserContext } from "../context/UserContext";
 import Projects from "../pages/Projects";
 import Profile from "../pages/Profile";
-// import ResetPassword from "../pages/ResetPassword";
-// import ForgotPassword from "../pages/ForgotPassword";
 
 export default function Navbar() {
   const { user, setUser } = useContext(UserContext);
@@ -18,13 +16,13 @@ export default function Navbar() {
 
   return (
     <motion.nav
-      className="bg-gray-800 text-white p-4 flex justify-between items-center shadow-md"
+      className="bg-gray-900 text-white p-4 flex justify-between items-center shadow-md"
       initial={{ y: -50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
       {/* Logo / App name */}
-      <h1 className="font-bold text-xl">🚀 ProjectUploader</h1>
+      <h1 className="font-bold text-xl">ContentUploader</h1>
 
       {/* Menu Items */}
       <div className="flex space-x-4 items-center">
